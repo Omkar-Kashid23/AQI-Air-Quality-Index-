@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Index</title>
+    <style>
+        :root {
+            --good: #9ccc65;
+            --moderate: #ffa726;
+            --unhealthy: #ef5350;
+            --severe: #b71c1c;
+            --hazardous: #3d0a61;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background: url("{{ url_for('static', filename='138631.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        h2 {
+            color: #34495e;
+            font-size: 1.2rem;
+            margin-top: 0;
+            font-weight: normal;
+        }
+        .aqi-value {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .pollutant {
+            font-size: 1.2rem;
+            margin: 15px 0;
+        }
+        .status {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 8px 0;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 0.8rem;
+        }
+        .scale-item {
+            flex: 1;
+            text-align: center;
+            padding: 5px 0;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+        }
+        .detail-item span {
+            margin-left: 10px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        /* AQI Status Colors */
+        .good { color: var(--good); }
+        .moderate { color: var(--moderate); }
+        .unhealthy { color: var(--unhealthy); }
+        .severe { color: var(--severe); }
+        .hazardous { color: var(--hazardous); }
+        .bg-good { background-color: var(--good); }
+        .bg-moderate { background-color: var(--moderate); }
+        .bg-unhealthy { background-color: var(--unhealthy); }
+        .bg-severe { background-color: var(--severe); }
+        .bg-hazardous { background-color: var(--hazardous); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Air Quality Index</h1>
+        <h2>Air Quality in Your Location</h2>
+        
+        <div id="aqiValue" class="aqi-value">157</div>
+        
+        <div id="pm10" class="pollutant">PM10: 136 μg/m³</div>
+        
+        <div id="aqiStatus" class="status unhealthy">Unhealthy</div>
+        
+        <div class="scale">
+            <div class="scale-item bg-good">Good</div>
+            <div class="scale-item bg-moderate">Moderate</div>
+            <div class="scale-item bg-unhealthy">Poor</div>
+            <div class="scale-item bg-severe">Unhealthy</div>
+            <div class="scale-item bg-hazardous">Severe</div>
+        </div>
+        
+        <div id="pm25" class="pollutant">PM2.5: 64 μg/m³</div>
+        
+        <div class="details">
+            <div class="detail-item">
+                <span>Humidity:</span>
+                <span id="humidity">17.2%</span>
+            </div>
+            <div class="detail-item">
+                <span>Wind Speed:</span>
+                <span id="windSpeed">8 km/h</span>
+            </div>
+            <div class="detail-item">
+                <span>UV Index:</span>
+                <span id="uvIndex">0</span>
+            </div>
+        </div>
+        
+        <button onclick="checkAirQuality()">Refresh Data</button>
+    </div>
+
+    <script>
+        function checkAirQuality() {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                try {
+                    const response = await fetch(`/api/air-quality?lat=${lat}&lon=${lon}`);
+                    const data = await response.json();
+                    updateUI(data);
+                } catch (error) {
+                    alert("Error fetching air quality data.");
+                }
+            }, (error) => {
+                alert("Please enable location services to get accurate air quality data.");
+            });
+        }
+
+        function updateUI(data) {
+            document.getElementById('aqiValue').textContent = data.aqi || '121';
+            document.getElementById('aqiStatus').textContent = getAqiStatus(data.aqi) || 'Unhealthy';
+            document.getElementById('aqiStatus').className = `status ${getAqiClass(data.aqi)}` || 'status unhealthy';
+        }
+
+        function getAqiClass(aqi) {
+            if (aqi <= 50) return 'good';
+            if (aqi <= 100) return 'moderate';
+            if (aqi <= 150) return 'unhealthy';
+            if (aqi <= 200) return 'severe';
+            return 'hazardous';
+        }
+
+        function getAqiStatus(aqi) {
+            if (aqi <= 50) return 'Good';
+            if (aqi <= 100) return 'Moderate';
+            if (aqi <= 150) return 'Unhealthy';
+            if (aqi <= 200) return 'Severe';
+            return 'Hazardous';
+        }
+        checkAirQuality();
+    </script>
+</body>
+</html>

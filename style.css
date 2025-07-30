@@ -1,0 +1,75 @@
+
+ body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.result {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.loading {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.aqi-1 { background-color: #d4edda; color: #155724; } /* Good */
+.aqi-2 { background-color: #fff3cd; color: #856404; } /* Fair */
+.aqi-3 { background-color: #ffe8cc; color: #804d00; } /* Moderate */
+.aqi-4 { background-color: #f8d7da; color: #721c24; } /* Poor */
+.aqi-5 { background-color: #e2d4f0; color: #3d0a61; } /* Very Poor */
+
+small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: inherit;
+    opacity: 0.8;
+}
