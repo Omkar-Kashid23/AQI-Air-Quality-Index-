@@ -12,7 +12,7 @@ def get_air_quality():
     print(f"Request received for lat={lat}, lon={lon}")
     if not lat or not lon:
         return jsonify({'error': 'Latitude and longitude are required'}), 400
-    api_key = os.getenv('OPENWEATHER_API_KEY', 'cc2ffad3b36caf9383ecd27bdd7f0ef8')
+    api_key = os.getenv('OPENWEATHER_API_KEY', " Enter your Api key here")
     url = f'http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={api_key}'
     try:
         response = requests.get(url)
